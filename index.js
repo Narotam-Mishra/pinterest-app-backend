@@ -8,11 +8,16 @@ import setUpDBConnection from './utilities/connectDB.js';
 
 const app = express();
 
+// allow json parsing in request body
+app.use(express.json());
+
+// register routers
 app.use("/users", userRouter);
 app.use("/pins", pinRouter);
 app.use("/comments", commentRouter);
 app.use("/boards", boardRouter);
 
+// home route for test
 app.use("/", (req, res) => {
     return res.json("Welcome to Pinterest app backend...");
 });

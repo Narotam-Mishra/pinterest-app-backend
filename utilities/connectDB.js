@@ -2,7 +2,6 @@
 import mongoose from 'mongoose';
 
 const mongoUrl = process.env.mongoURL;
-console.log("MongoDB URL:", mongoUrl);
 
 const setUpDBConnection = async () => {
     try {

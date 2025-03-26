@@ -1,5 +1,6 @@
 
 import express from 'express';
+import cors from 'cors';
 import userRouter from './routes/user.route.js';
 import pinRouter from './routes/pin.route.js';
 import commentRouter from './routes/comment.route.js';
@@ -10,6 +11,9 @@ const app = express();
 
 // allow json parsing in request body
 app.use(express.json());
+
+// handle CORS issue
+app.use(cors({ origin: process.env.Client_URL}));
 
 // register routers
 app.use("/users", userRouter);

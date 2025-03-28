@@ -11,6 +11,6 @@ export const getPins = async (req, res) => {
   const hasNextPage = pins.length === LIMIT;
 
   // add delay to load page
-  
+  await new Promise(resolve => setTimeout(resolve, 3000));
   res.status(200).json({pins, nextCursor: hasNextPage ? pageNumber+1 : null });
 };

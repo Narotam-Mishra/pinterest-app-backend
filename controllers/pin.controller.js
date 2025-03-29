@@ -1,9 +1,11 @@
 import Pin from "../models/pin.model.js"
+import User from '../models/user.model.js';
 
 export const getPins = async (req, res) => {
   // implementing infinite page scroll logic
   const pageNumber = Number(req.query.cursor) || 0;
   const search = req.query.search;
+  const userId = req.query.userId;
   const LIMIT = 21;
 
   const pins = await Pin.find(
@@ -14,6 +16,8 @@ export const getPins = async (req, res) => {
             { tags: { $in: [search] } },
           ],
         }
+      : userId
+      ? { user: userId }
       : {}
   )
     .limit(LIMIT)

@@ -23,7 +23,7 @@ app.use("/boards", boardRouter);
 
 // home route for test
 app.use("/", (req, res) => {
-    return res.json("Welcome to Pinterest app backend...");
+    res.send("Welcome to Pinterest app backend...");
 });
 
 const port = process.env.PORT || 7541;

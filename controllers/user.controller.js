@@ -21,6 +21,16 @@ export const registerUser = async (req, res) => {
         hashedPassword: newHashedPassword,
     });
 
+    // create jwt token
+    const token = jwt.sign({ userId: userData._id }, process.env.JWT_SECRET);
+
+    // set cookie inside response
+    res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+
     const { hashedPassword, ...detailsWithoutPassword } = user.toObject();
     res.status(201).json(detailsWithoutPassword);
 }
@@ -63,7 +73,9 @@ export const loginUser = async (req, res) => {
 
 
 export const logoutUser = async (req, res) => {
-    
+    // after logout clear cookie
+    res.clearCookie("token");
+    res.status(200).json({ message: "Logout successful!!" })
 }
 
 export const getUser = async (req, res) => {

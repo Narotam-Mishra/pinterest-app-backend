@@ -13,7 +13,7 @@ const app = express();
 app.use(express.json());
 
 // handle CORS issue
-app.use(cors({ origin: process.env.Client_URL}));
+app.use(cors({ origin: process.env.Client_URL, credentials: true}));
 
 // register routers
 app.use("/users", userRouter);

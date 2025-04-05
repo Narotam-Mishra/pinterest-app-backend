@@ -1,5 +1,6 @@
 
 import User from '../models/user.model.js';
+import Follow from '../models/follow.model.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
@@ -79,8 +80,63 @@ export const logoutUser = async (req, res) => {
 }
 
 export const getUser = async (req, res) => {
+  const { username } = req.params;
+  const singleUser = await User.findOne({ username });
+  const { hashedPassword, ...detailsWithoutPassword } = singleUser.toObject();
+
+  // get follower and follwing count
+  const followerCount = await Follow.countDocuments({
+    following: singleUser._id,
+  });
+  const followingCount = await Follow.countDocuments({
+    follwer: singleUser._id,
+  });
+
+  // get username from cookie's token
+  const token = req.cookies.token;
+  if (!token) {
+    res.status(200).json({
+      ...detailsWithoutPassword,
+      followerCount,
+      followingCount,
+      isFollowing: false,
+    });
+  } else {
+    // verify token using jwt
+    jwt.verify(token, process.env.JWT_SECRET, async (err, payload) => {
+      if (!err) {
+        const isExists = await Follow.exists({
+          follwer: payload.userId,
+          following: singleUser._id,
+        });
+
+        res.status(200).json({
+          ...detailsWithoutPassword,
+          followerCount,
+          followingCount,
+          isFollowing: isExists ? true : false,
+        });
+      }
+    });
+  }
+};
+
+// follow / following api 
+export const followUser = async (req, res) => {
     const { username } = req.params;
-    const singleUser = await User.findOne({ username });
-    const { hashedPassword, ...detailsWithoutPassword } = singleUser.toObject();
-    res.status(200).json(detailsWithoutPassword);
+
+    const user = await User.findOne({ username });
+
+    const isFollowing = await Follow.exists({
+        follwer: req.userId,
+        following: user._id,
+    });
+
+    if(isFollowing){
+        await Follow.deleteOne({ follwer: req.userId, following: user._id });
+    }else{
+        await Follow.create({ follwer: req.userId, following: user._id });
+    }
+
+    res.status(200).json({ message: "Successful!!" });
 }

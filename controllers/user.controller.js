@@ -123,20 +123,25 @@ export const getUser = async (req, res) => {
 
 // follow / following api 
 export const followUser = async (req, res) => {
-    const { username } = req.params;
+  const { username } = req.params;
 
-    const user = await User.findOne({ username });
+  const user = await User.findOne({ username });
 
-    const isFollowing = await Follow.exists({
-        follwer: req.userId,
-        following: user._id,
-    });
+  // check if user exists
+  if (!user) {
+    return res.status(404).json({ message: "User not found!" });
+  }
 
-    if(isFollowing){
-        await Follow.deleteOne({ follwer: req.userId, following: user._id });
-    }else{
-        await Follow.create({ follwer: req.userId, following: user._id });
-    }
+  const isFollowing = await Follow.exists({
+    follwer: req.userId,
+    following: user._id,
+  });
 
-    res.status(200).json({ message: "Successful!!" });
-}
+  if (isFollowing) {
+    await Follow.deleteOne({ follwer: req.userId, following: user._id });
+  } else {
+    await Follow.create({ follwer: req.userId, following: user._id });
+  }
+
+  res.status(200).json({ message: "Successful!!" });
+};

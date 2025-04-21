@@ -41,3 +41,13 @@ export const getPin = async (req, res) => {
   const singlePin = await Pin.findById(id).populate("user", "username img, displayName");
   res.status(200).json(singlePin);
 }
+
+export const createPin = async (req, res) => {
+  const { title, description, link, board, tags, textOptions, canvasOptions } = req.body;
+
+  const media = req.files.media;
+
+  if(!title, !description, !media){
+    return res.status(400).json({ message: "All fields are required!" });
+  }
+}

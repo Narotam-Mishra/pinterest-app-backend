@@ -23,7 +23,7 @@ export const registerUser = async (req, res) => {
     });
 
     // create jwt token
-    const token = jwt.sign({ userId: userData._id }, process.env.JWT_SECRET);
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
 
     // set cookie inside response
     res.cookie("token", token, {
